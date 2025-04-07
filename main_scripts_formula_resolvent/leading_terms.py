@@ -2,11 +2,11 @@ from sage.all import *
 
 # Declare variables for x's and e's.
 var_list = ["x" + str(i) for i in range(100)] + ["e" + str(i) for i in range(100)]
-var(var_list + ["n","x"])
+var(var_list + ["n","x","T"])
 
 # Declare symbolic coefficients for the original polynomial.
 # Note: we rename the coefficient 'e' to 'e_coef' to avoid conflict with the elementary symmetric variables.
-var('a b c d e_coef f g h')
+var('a b c d e_coef f g h i_coef')
 
 # Define the symmetric functions object (renamed to avoid clashing with the symbolic e's).
 e = SymmetricFunctions(QQ).e()  # Not used in our final substitutions.
@@ -59,7 +59,7 @@ def vietas_dict(deg):
     
     Coefficients are taken in order from the list: [a, b, c, d, e_coef, f, g, h].
     """
-    coeff_symbols = [a, b, c, d, e_coef, f, g, h, i]  # Coefficients in order.
+    coeff_symbols = [a, b, c, d, e_coef, f, g, h, i_coef]  # Coefficients in order.
     subs_dict = {}
     for k in range(deg+1):
         # Retrieve the symbolic variable e0, e1, ... from the global namespace.
@@ -90,7 +90,7 @@ def csum(n):
 
 #print(vietas_dict(4))
 #print(root_unity(4))	
-for j in range(3, 9):
+for j in range(3, 6):
 
     polyno=polexp(j).subs({e0:1})    
 
@@ -144,35 +144,74 @@ for j in range(3, 9):
     fixed = [term for term in new1 if term not in lonely_terms] + [sum(lonely_terms)]
     
     leading = fixed[0].subs({x0:1})
+    second_leading=fixed[1].subs({x0:1})
+    third_leading=fixed[2].subs({x0:1})
     div_leading = [val / fixed[0].subs({x0:1}) for val in fixed]
     print("Degree j =", j)
     print("\nPolynomial")
     print(polyno)
-    print("\nGrouped formula (by powers of x₀):")
-    print(grouped_formula)
-    print("\nLaTeX code for grouped formula:")
-    print(latex_grouped_formula)
-    print("\nAfter substitution using Vieta's formulas:")
-    print(grouped_subs)
-    print("\nLaTeX code for grouped vieta:")
-    print(latex(grouped_subs))
-    print("\n Results after substitution for roots variables")
-    print(subs_ele)
+    print("\nPolynomial cofficients")
+    print(polyno.subs(vietas_dict(j)))
+    #print("\nGrouped formula (by powers of x₀):")
+    #print(grouped_formula)
+    #print("\nLaTeX code for grouped formula:")
+    #print(latex_grouped_formula)
+    #print("\nAfter substitution using Vieta's formulas:")
+    #print(grouped_subs)
+    #print("\nLaTeX code for grouped vieta:")
+    #print(latex(grouped_subs))
+    #print("\n Results after substitution for roots variables")
+    #print(subs_ele)
     print("\n Substracting the original polynomial\n")
     print(fixed)
     print("\n")
-    print(sum(fixed).subs(vietas_dict(j)).collect(x0))
-    print("\n")
-    print(sum(div_leading).subs(vietas_dict(j)).collect(x0).subs({x0:x}))
-    print("\n")
-    print(sum(div_leading).collect(x0).subs({x0:x}))
-    print("\n Leading term \n")
-    print(leading)
-    print("\n")
+    vieta_sum=[u.subs(vietas_dict(j)) for u in fixed]
+    print(vieta_sum)
+    if j==4:
+        print("\n Replaced \n")
+        print([yu.subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor().subs({x0:1}) for yu in vieta_sum])
+        print(sum([yu.subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor() for yu in vieta_sum]))
+        print(grouped_formula.subs(vietas_dict(j)).subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor().subs({x0:1}))
+    if j==5:
+        print("\n Replaced \n")
+        print([yu.subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor().subs({x0:1}) for yu in vieta_sum])
+        overa=sum([yu.subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor() for yu in vieta_sum]).factor()
+        print(overa.operands()[0].simplify().factor().collect(x0))
+        newvi=[m.subs(vietas_dict(j)).subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor().subs({x0:1}) for m in grouped_formula.operands()]
+        print(newvi)
+        print(sum(newvi).full_simplify())
+    #print("\n")
+    #print(sum(div_leading).subs(vietas_dict(j)).collect(x0).subs({x0:x}))
+    #print("\n")
+    #print(sum(div_leading).collect(x0).subs({x0:x}))
+    #print("\n Leading term \n")
+    #print(leading)
+    #print("\n Second leading \n")
+    #print(second_leading)
+    #print("\n Third Leading")
+    #print(third_leading)
+    #print("\n Leading vieta")
+    #print(leading.subs(vietas_dict(j)))
+    #if j==4:
+    #    print("\n Replaced \n")
+    #    print(leading.subs(vietas_dict(j)).subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor())
+    #print("\n Second vieta")
+    #print(second_leading.subs(vietas_dict(j)))
+    #if j==4:
+    #    print("\n Replaced \n")
+    #    print(second_leading.subs(vietas_dict(j)).subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor())
+    #print("\n Third vieta")
+    #print(third_leading.subs(vietas_dict(j)))
+    #if j==4:
+    #    print("\n Replaced \n")
+    #    print(third_leading.subs(vietas_dict(j)).subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor())
+    print("\n Leading roots")
     lea_roots=leading.subs(ele_dict(j)).simplify().factor()
     print(lea_roots)
-    print("\n")
-    lea_uni=lea_roots.subs(root_unity(j)).simplify().factor()
-    print(N(lea_uni))
-    print("\n")
+    print("\n Second roots")
+    print(second_leading.subs(ele_dict(j)).simplify().factor())
+    print("\n Third roots")
+    print(third_leading.subs(ele_dict(j)).simplify().factor())
     print("\n" + "="*50 + "\n")
+    #lea_uni=lea_roots.subs(root_unity(j)).simplify().factor()
+    #print(N(lea_uni))
