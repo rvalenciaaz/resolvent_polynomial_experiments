@@ -117,13 +117,7 @@ for j in range(3, 6):
     
     leading = fixed[0].subs({x0:1})
     
-    if j==4:
-        diff=grouped_formula-leading*polyno
-    
-        diff_sim=diff.simplify().collect(x0)
-    
-        new1=diff_sim.operands()
-    elif j>4:
+    if j>=4:
         diff=grouped_formula
         for cou in range(0,j-3):
             #print("\ntmp\n")
