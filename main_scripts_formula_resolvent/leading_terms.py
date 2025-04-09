@@ -167,19 +167,40 @@ for j in range(3, 6):
     print("\n")
     vieta_sum=[u.subs(vietas_dict(j)) for u in fixed]
     print(vieta_sum)
+    if j==3:
+        print("\n Replaced \n")
+        repi=[yu.subs({b:-(T**3-2*T**2+3*T-3),c:-(T**2),d:-1}).simplify().factor().subs({x0:1}) for yu in vieta_sum]
+        for ico, termo in enumerate(repi):
+            print("\n")
+            print(ico)
+            print(" term/coefficient:")
+            print(termo)
+            print("\n")
     if j==4:
         print("\n Replaced \n")
-        print([yu.subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor().subs({x0:1}) for yu in vieta_sum])
-        print(sum([yu.subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor() for yu in vieta_sum]))
-        print(grouped_formula.subs(vietas_dict(j)).subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor().subs({x0:1}))
+        repi=[yu.subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor().subs({x0:1}) for yu in vieta_sum]
+        for ico, termo in enumerate(repi):
+            print("\n")
+            print(ico)
+            print(" term/coefficient:")
+            print(termo)
+            print("\n")
+        #print(sum([yu.subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor() for yu in vieta_sum]))
+        #print(grouped_formula.subs(vietas_dict(j)).subs({b:-T,c:-6,d:T,e_coef:1}).simplify().factor().subs({x0:1}))
     if j==5:
         print("\n Replaced \n")
-        print([yu.subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor().subs({x0:1}) for yu in vieta_sum])
-        overa=sum([yu.subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor() for yu in vieta_sum]).factor()
-        print(overa.operands()[0].simplify().factor().collect(x0))
-        newvi=[m.subs(vietas_dict(j)).subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor().subs({x0:1}) for m in grouped_formula.operands()]
-        print(newvi)
-        print(sum(newvi).full_simplify())
+        repi=[yu.subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor().subs({x0:1}) for yu in vieta_sum]
+        for ico, termo in enumerate(repi):
+            print("\n")
+            print(ico)
+            print(" term/coefficient:")
+            print(termo)
+            print("\n")
+        #overa=sum([yu.subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor() for yu in vieta_sum]).factor()
+        #print(overa.operands()[0].simplify().factor().collect(x0))
+        #newvi=[m.subs(vietas_dict(j)).subs({b:T**2,c:-(2*T**3+6*T**2+10*T+10),d:(T**4+5*T**3+11*T**2+15*T+5),e_coef:(T**3+4*T**2+10*T+10),f:1}).simplify().factor().subs({x0:1}) for m in grouped_formula.operands()]
+        #print(newvi)
+        #print(sum(newvi).full_simplify())
     #print("\n")
     #print(sum(div_leading).subs(vietas_dict(j)).collect(x0).subs({x0:x}))
     #print("\n")
