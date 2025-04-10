@@ -96,9 +96,9 @@ def common_calc(j):
     # Step 4: Subtraction of polynomial multiples if j >= 4
     if j >= 4:
         diff = grouped_formula
-        for _ in range(j - 3):
+        for q in range(j - 3):
             # Subtract leading * polyno * x0^(some exponent)
-            subi = leading * (polyno * x0 ** (j - 4)).collect(x0).simplify()
+            subi = leading * (polyno * x0 ** (j - 4 - q)).collect(x0).simplify()
             diff = (diff - subi).collect(x0).simplify()
             new1 = diff.operands()
             lonely_terms = [t for t in new1 if not t.has(x0)]
@@ -141,7 +141,57 @@ def calc_rootis(j):
         for term in fixed_terms
     ]
 
+def common_calc_original(j):
+    """
+    Runs the core logic:
+    - Constructs the monic polynomial (polexp) for degree j, setting e0=1.
+    - Builds the formula (bsum^2 - asum*csum)/(j-1)^2 and collects terms in x0.
+    - For j >= 4, subtracts multiples of the polynomial from the formula.
+    - Returns the final list of terms, called 'fixed'.
 
+    Called internally by the other functions to avoid code duplication.
+    """
+    # Step 1: The polynomial
+    polyno = polexp(j).subs({e0: 1})
+
+    # Step 2: The derived formula
+    formula = (bsum(j) ** 2 - asum(j) * csum(j)) / (j - 1) ** 2
+
+    # Step 3: Collect and set e0=1
+    grouped_formula = formula.collect(x0).subs({e0: 1})
+
+    # Identify terms that do not contain x0
+    new1 = grouped_formula.operands()
+    lonely_terms = [t for t in new1 if not t.has(x0)]
+    fixed = [t.subs({x0:1}) for t in new1 if t not in lonely_terms] + [sum(lonely_terms)]
+    #leading = fixed[0].subs({x0: 1})
+    '''
+    # Step 4: Subtraction of polynomial multiples if j >= 4
+    if j >= 4:
+        diff = grouped_formula
+        for q in range(j - 3):
+            # Subtract leading * polyno * x0^(some exponent)
+            subi = leading * (polyno * x0 ** (j - 4 - q)).collect(x0).simplify()
+            diff = (diff - subi).collect(x0).simplify()
+            new1 = diff.operands()
+            lonely_terms = [t for t in new1 if not t.has(x0)]
+            fixed = [t for t in new1 if t not in lonely_terms] + [sum(lonely_terms)]
+            leading = fixed[0].subs({x0: 1})
+
+    # Final fix in case of any leftover changes
+    lonely_terms = [t for t in new1 if not t.has(x0)]
+    fixed = [t.subs({x0:1}) for t in new1 if t not in lonely_terms] + [sum(lonely_terms)]
+    '''
+    # Return the final "fixed" list of terms
+    return fixed
+
+def calc_vieta_sum_original(j):
+    """
+    Returns the 'fixed' terms with Vieta's substitutions (a, b, c, etc.)
+    for a given j.
+    """
+    fixed_terms = common_calc_original(j)
+    return [term.subs(vietas_dict(j)) for term in fixed_terms]
 # If you want to do a quick test inside this script, you can uncomment below:
 # if __name__ == "__main__":
 #     j_test = 4
