@@ -1,4 +1,13 @@
 #!/usr/bin/env sage -python
+"""
+This script processes polynomials stored in .txt files within a folder.
+For each polynomial, it computes Vieta-derived terms, the gcd of the terms,
+the number of zero terms, and the discriminant, and then writes the result
+directly to both a per-group CSV and a combined CSV file.
+This version avoids accumulating all rows in memory by writing each row to file
+immediately and writes all output files into a newly created output folder.
+The group name is taken as the part of the filename before the first equal sign.
+"""
 
 from functions_resolvent_calculation import calc_vieta_sum
 from sage.all import *
@@ -17,6 +26,12 @@ if len(sys.argv) < 3:
 
 folder = sys.argv[1]
 degree = int(sys.argv[2])
+
+# ------------------------------
+# Create new output folder
+# ------------------------------
+output_folder = f"output_deg{degree}"
+os.makedirs(output_folder, exist_ok=True)
 
 # ------------------------------
 # Declare variables and define symbols
@@ -39,9 +54,9 @@ fieldnames = (
 )
 
 # ------------------------------
-# Open combined CSV file for streaming writing
+# Open combined CSV file for streaming writing in the output folder
 # ------------------------------
-combined_csv = f"output_all_deg{degree}.csv"
+combined_csv = os.path.join(output_folder, f"output_all_deg{degree}.csv")
 combined_file = open(combined_csv, 'w', newline='')
 combined_writer = csv.DictWriter(combined_file, fieldnames=fieldnames)
 combined_writer.writeheader()
@@ -56,8 +71,8 @@ for filename in tqdm(txt_files, desc="Processing files"):
     # Only consider the part of the filename before the first equal sign.
     galois_group = os.path.splitext(filename)[0].split("=")[0].strip()
 
-    # Open per-group CSV file
-    group_csv = f"output_{galois_group}_deg{degree}.csv"
+    # Open per-group CSV file inside the output folder
+    group_csv = os.path.join(output_folder, f"output_{galois_group}_deg{degree}.csv")
     group_file = open(group_csv, 'w', newline='')
     group_writer = csv.DictWriter(group_file, fieldnames=fieldnames)
     group_writer.writeheader()
@@ -71,7 +86,7 @@ for filename in tqdm(txt_files, desc="Processing files"):
             try:
                 poly = SR(poly_str)
                 coeffs = poly.coefficients(sparse=False)
-                # Ensure correct number of coefficients by padding with zeroes:
+                # Ensure correct number of coefficients by padding with zeros:
                 coeffs = [0] * (degree + 1 - len(coeffs)) + coeffs
 
                 if coeffs[0] != 1:
@@ -129,7 +144,7 @@ combined_file.close()
 # ------------------------------
 try:
     df = pd.read_csv(combined_csv)
-    combined_xlsx = f"output_all_deg{degree}.xlsx"
+    combined_xlsx = os.path.join(output_folder, f"output_all_deg{degree}.xlsx")
     df.to_excel(combined_xlsx, index=False)
     print(f"\n📦 Combined XLSX → {combined_xlsx}")
 except Exception as e:
