@@ -1,13 +1,4 @@
 #!/usr/bin/env sage -python
-"""
-This script processes polynomials stored in .txt files within a folder.
-For each polynomial, it computes Vieta-derived terms, the gcd of the terms,
-the number of zero terms, and the discriminant, and then writes the result
-directly to both a per-group CSV and a combined CSV file.
-This version avoids accumulating all rows in memory by writing each row to file
-immediately and writes all output files into a newly created output folder.
-The group name is taken as the part of the filename before the first equal sign.
-"""
 
 from functions_resolvent_calculation import calc_vieta_sum
 from sage.all import *
@@ -77,9 +68,13 @@ for filename in tqdm(txt_files, desc="Processing files"):
     group_writer = csv.DictWriter(group_file, fieldnames=fieldnames)
     group_writer.writeheader()
 
+    # Count the number of lines in the file to set up the progress bar:
     with open(filepath, 'r') as f:
-        # Process each equation as a stream to reduce memory usage.
-        for poly_str in tqdm(f, desc="Polynomials", leave=False):
+        total_lines = sum(1 for _ in f)
+
+    # Reopen the file for processing with a tqdm progress bar
+    with open(filepath, 'r') as f:
+        for poly_str in tqdm(f, total=total_lines, desc="Polynomials", leave=False):
             poly_str = poly_str.strip()
             if not poly_str:
                 continue
