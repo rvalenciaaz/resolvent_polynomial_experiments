@@ -5,7 +5,8 @@ For each polynomial, it computes Vieta-derived terms, the gcd of the terms,
 the number of zero terms, and the discriminant, and then writes the result
 directly to both a per-group CSV and a combined CSV file.
 This version avoids accumulating all rows in memory by writing each row to file
-immediately.
+immediately and only uses the part of the filename before the first equal sign
+for the group CSV file.
 """
 
 from functions_resolvent_calculation import calc_vieta_sum
@@ -61,7 +62,8 @@ txt_files = [f for f in os.listdir(folder) if f.endswith(".txt")]
 
 for filename in tqdm(txt_files, desc="Processing files"):
     filepath = os.path.join(folder, filename)
-    galois_group = os.path.splitext(filename)[0]
+    # Only consider the part of the filename before the first equal sign.
+    galois_group = os.path.splitext(filename)[0].split("=")[0].strip()
 
     # Open per-group CSV file
     group_csv = f"output_{galois_group}_deg{degree}.csv"
@@ -115,7 +117,7 @@ for filename in tqdm(txt_files, desc="Processing files"):
                     "discriminant": discriminant_val
                 }
                 for i in range(num_terms):
-                    # If for some reason repi is shorter than expected, use an empty string.
+                    # If repi is shorter than expected, use an empty string.
                     row[f"term_{i}"] = str(repi[i]) if i < len(repi) else ""
 
                 # Write the row to both the group and the combined CSV files immediately.
@@ -123,7 +125,7 @@ for filename in tqdm(txt_files, desc="Processing files"):
                 combined_writer.writerow(row)
 
             except Exception:
-                # Skip rows that generate errors (optionally log the error).
+                # Skip rows that generate errors (optionally log the exception).
                 continue
 
     group_file.close()
