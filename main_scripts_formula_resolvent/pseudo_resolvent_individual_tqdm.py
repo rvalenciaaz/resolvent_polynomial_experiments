@@ -1,17 +1,4 @@
 #!/usr/bin/env sage -python
-"""
-This script processes polynomials stored in .txt files within a folder.
-For each polynomial, it computes Vieta-derived terms, the gcd of the terms,
-the number of zero terms, and the discriminant, and then writes the result
-directly to both per-group CSV files and a combined CSV file in a new output folder.
-The group name is taken as the part of the filename before the first equal sign.
-A progress bar with percentage is shown for the polynomial processing using
-the total number of lines in each input file.
-
-Additionally, the folder argument is assumed to contain the range information,
-for example "galois_deg4_range15". This information is extracted and appended
-to the output folder name and file names.
-"""
 
 from functions_resolvent_calculation import calc_vieta_sum
 from sage.all import *
