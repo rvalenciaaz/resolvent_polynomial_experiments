@@ -1,4 +1,17 @@
 #!/usr/bin/env sage -python
+"""
+This script processes polynomials stored in .txt files within a folder.
+For each polynomial, it computes Vieta-derived terms, the gcd of the terms,
+the number of zero terms, and the discriminant, and then writes the result
+directly to both per-group CSV files and a combined CSV file in a new output folder.
+The group name is taken as the part of the filename before the first equal sign.
+A progress bar with percentage is shown for the polynomial processing using
+the total number of lines in each input file.
+
+Additionally, the folder argument is assumed to contain the range information,
+for example "galois_deg4_range15". This information is extracted and appended
+to the output folder name and file names.
+"""
 
 from functions_resolvent_calculation import calc_vieta_sum
 from sage.all import *
@@ -19,9 +32,10 @@ folder = sys.argv[1]
 degree = int(sys.argv[2])
 
 # ------------------------------
-# Create new output folder
+# Get folder info from folder argument and create new output folder
 # ------------------------------
-output_folder = f"output_deg{degree}"
+folder_info = os.path.basename(os.path.normpath(folder))  # e.g., "galois_deg4_range15"
+output_folder = f"output_{folder_info}"
 os.makedirs(output_folder, exist_ok=True)
 
 # ------------------------------
@@ -34,7 +48,7 @@ var("a b c d e_coef f g h i_coef")
 
 # ------------------------------
 # Setup CSV Headers based on the fixed number of Vieta terms.
-# Here we assume calc_vieta_sum(degree) returns a list with fixed length.
+# We assume calc_vieta_sum(degree) returns a list with fixed length.
 # ------------------------------
 vieta_terms = calc_vieta_sum(degree)
 num_terms = len(vieta_terms)
@@ -47,7 +61,7 @@ fieldnames = (
 # ------------------------------
 # Open combined CSV file for streaming writing in the output folder
 # ------------------------------
-combined_csv = os.path.join(output_folder, f"output_all_deg{degree}.csv")
+combined_csv = os.path.join(output_folder, f"output_all_{folder_info}.csv")
 combined_file = open(combined_csv, 'w', newline='')
 combined_writer = csv.DictWriter(combined_file, fieldnames=fieldnames)
 combined_writer.writeheader()
@@ -63,16 +77,16 @@ for filename in tqdm(txt_files, desc="Processing files"):
     galois_group = os.path.splitext(filename)[0].split("=")[0].strip()
 
     # Open per-group CSV file inside the output folder
-    group_csv = os.path.join(output_folder, f"output_{galois_group}_deg{degree}.csv")
+    group_csv = os.path.join(output_folder, f"output_{galois_group}_{folder_info}.csv")
     group_file = open(group_csv, 'w', newline='')
     group_writer = csv.DictWriter(group_file, fieldnames=fieldnames)
     group_writer.writeheader()
 
-    # Count the number of lines in the file to set up the progress bar:
+    # Count the number of lines in the file for progress reporting.
     with open(filepath, 'r') as f:
         total_lines = sum(1 for _ in f)
 
-    # Reopen the file for processing with a tqdm progress bar
+    # Reopen the file for processing with a tqdm progress bar.
     with open(filepath, 'r') as f:
         for poly_str in tqdm(f, total=total_lines, desc="Polynomials", leave=False):
             poly_str = poly_str.strip()
@@ -118,7 +132,6 @@ for filename in tqdm(txt_files, desc="Processing files"):
                     "discriminant": discriminant_val
                 }
                 for i in range(num_terms):
-                    # If repi is shorter than expected, use an empty string.
                     row[f"term_{i}"] = str(repi[i]) if i < len(repi) else ""
 
                 # Write the row to both the group and the combined CSV files immediately.
@@ -139,7 +152,7 @@ combined_file.close()
 # ------------------------------
 try:
     df = pd.read_csv(combined_csv)
-    combined_xlsx = os.path.join(output_folder, f"output_all_deg{degree}.xlsx")
+    combined_xlsx = os.path.join(output_folder, f"output_all_{folder_info}.xlsx")
     df.to_excel(combined_xlsx, index=False)
     print(f"\n📦 Combined XLSX → {combined_xlsx}")
 except Exception as e:
