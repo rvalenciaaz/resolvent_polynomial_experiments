@@ -93,8 +93,8 @@ for filename in tqdm(txt_files, desc="Processing files"):
                 named_coeffs = ['b', 'c', 'd', 'e_coef', 'f', 'g', 'h', 'i_coef']
                 substitutions = {}
                 for i in range(1, degree + 1):
-                    varname = named_coeffs[i - 1] if i - 1 < len(named_coeffs) else f"c{i}"
-                    substitutions[SR(varname)] = coeffs[i]
+                    varname = named_coeffs[degree - i] if i - 1 < len(named_coeffs) else f"c{i}"
+                    substitutions[SR(varname)] = coeffs[i-1]
 
                 # Compute Vieta-derived terms (assumed constant in number for fixed degree)
                 vieta_sum_exprs = calc_vieta_sum(degree)

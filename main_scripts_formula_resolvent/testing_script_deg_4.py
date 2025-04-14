@@ -37,3 +37,12 @@ for ico, termo in enumerate(repi):
     print("\n", ico, " term/coefficient:")
     print(termo, "\n")
 print("\n", "Discriminant", "\n", disco, "\n")
+
+print("\n Replaced by simplest quartic \n")
+vieta_sum=calc_vieta_sum(j)
+repi = [expr.subs({b: 4, c: -3, d: -14, e_coef: 1}).simplify().factor().subs({x0: 1}) for expr in vieta_sum]
+disco=(repi[1]**2-4*repi[0]*repi[1]).full_simplify().factor()
+for ico, termo in enumerate(repi):
+    print("\n", ico, " term/coefficient:")
+    print(termo, "\n")
+print("\n", "Discriminant", "\n", disco, "\n")
