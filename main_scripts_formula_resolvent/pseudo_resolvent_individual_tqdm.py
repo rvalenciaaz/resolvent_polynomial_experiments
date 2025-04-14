@@ -85,7 +85,7 @@ for filename in tqdm(txt_files, desc="Processing files"):
                 # Ensure correct number of coefficients by padding with zeros:
                 coeffs = [0] * (degree + 1 - len(coeffs)) + coeffs
 
-                if coeffs[0] != 1:
+                if coeffs[-1] != 1:
                     # Skip non-monic polynomials.
                     continue
 
