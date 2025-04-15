@@ -22,7 +22,7 @@ degree = int(sys.argv[2])
 # Get folder info from folder argument and create new output folder
 # ------------------------------
 folder_info = os.path.basename(os.path.normpath(folder))  # e.g., "galois_deg4_range15"
-output_folder = f"output_last1_{folder_info}"
+output_folder = f"output_ori_{folder_info}"
 os.makedirs(output_folder, exist_ok=True)
 
 # ------------------------------
@@ -63,7 +63,7 @@ for filename in tqdm(txt_files, desc="Processing files"):
     # Derive the Galois group name from the filename
     galois_group = os.path.splitext(filename)[0].split("=")[0].strip()
 
-    group_csv = os.path.join(output_folder, f"output_last1_{galois_group}_{folder_info}.csv")
+    group_csv = os.path.join(output_folder, f"output_ori_{galois_group}_{folder_info}.csv")
     group_file = open(group_csv, 'w', newline='')
     group_writer = csv.DictWriter(group_file, fieldnames=fieldnames)
     group_writer.writeheader()
