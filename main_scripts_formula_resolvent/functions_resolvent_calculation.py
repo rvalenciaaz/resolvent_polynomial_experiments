@@ -172,6 +172,17 @@ def calc_vieta_sum_original(j):
     fixed_terms = common_calc_original(j)
     return [term.subs(vietas_dict(j)) for term in fixed_terms]
 
+def calc_rootis_original(j):
+    """
+    Returns the 'fixed' terms with the elementary‐symmetric expansions
+    (i.e., substituting e_i with expansions in x0..x(j-1)).
+    """
+    fixed_terms = common_calc_original(j)
+    return [
+        term.subs({x0: 1}).subs(ele_dict(j)).simplify().factor()
+        for term in fixed_terms
+    ]
+
 ###############################################################################
 # New: common_calc_intermediates and calc_vieta_sum_intermediates
 ###############################################################################

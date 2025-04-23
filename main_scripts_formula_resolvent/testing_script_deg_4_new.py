@@ -1,4 +1,4 @@
-from functions_resolvent_cascade import calc_fixed, calc_vieta_sum, calc_rootis, polexp, polexp_vieta
+from functions_resolvent_calculation_leading import calc_fixed, calc_vieta_sum, calc_rootis, polexp, polexp_vieta
 from sage.all import *
 var_list = ["x" + str(i) for i in range(100)] + ["e" + str(i) for i in range(100)]
 var(var_list + ["n", "x", "T"])
@@ -10,7 +10,7 @@ print("Polynomial =", polexp_vieta(j))
 print("Fixed terms =", calc_fixed(j))
 print("Vieta sum =", calc_vieta_sum(j))
 print("Root expansions =", calc_rootis(j))
-print(calc_rootis(j)[1]/calc_rootis(j)[0])
+
 print("\n Replaced by C4 \n")
 vieta_sum=calc_vieta_sum(j)
 repi = [expr.subs({b: 7, c: -6, d: -2, e_coef: 1}).simplify().factor().subs({x0: 1}) for expr in vieta_sum]

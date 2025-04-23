@@ -37,6 +37,7 @@ var("a b c d e_coef f g h i_coef")
 # Setup CSV Headers
 # ------------------------------
 vieta_terms = calc_vieta_sum(degree)
+print(vieta_terms)
 num_terms = len(vieta_terms)
 
 fieldnames = (
